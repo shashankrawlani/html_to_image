@@ -29,8 +29,10 @@ RUN mkdir -p static && chmod 777 static
 # Set environment variables
 ENV HOST_IMAGES=1
 ENV MAX_DOWNLOADS=5
-ENV IMAGE_EXPIRY_DAYS=30
-ENV API_TOKEN="BusItnaSaKhwaabHai"
+ENV IMAGE_EXPIRY_DAYS=3
+ENV API_TOKEN="DaduBhogLagaRaheHai"
+ENV ROOT_PATH="/html_to_image"
+ENV BASE_URL="https://tools.automationtester.in"
 
 # Expose the port
 EXPOSE 8000

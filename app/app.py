@@ -12,11 +12,16 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, HttpUrl, AnyHttpUrl
 
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
+
 # Configuration
-API_TOKEN = os.getenv("API_TOKEN", "BusItnaSaKhwaabHai")  # Change this in production
+API_TOKEN = os.getenv("API_TOKEN", "DaduBhogLagaRaheHai")  # Change this in production
 MAX_DOWNLOADS = int(os.getenv("MAX_DOWNLOADS", "5"))  # Default max downloads per image
+ROOT_PATH = str(os.getenv("ROOT_PATH", "/html_to_image"))  # Default max downloads per image
+#ROOT_PATH = "/html_to_image"
 HOST_IMAGES = int(os.getenv("HOST_IMAGES", "1"))  # Default max downloads per image
-IMAGE_EXPIRY_DAYS = int(os.getenv("IMAGE_EXPIRY_DAYS", "30"))  # Default expiry in days
+IMAGE_EXPIRY_DAYS = int(os.getenv("IMAGE_EXPIRY_DAYS", "3"))  # Default expiry in days
 STATIC_DIR = Path("static")
 STATIC_DIR.mkdir(exist_ok=True)
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")  # Base URL for absolute links
@@ -29,6 +34,7 @@ app = FastAPI(
     title="HTML to Image API",
     description="API for converting HTML to images",
     version="1.0.0",
+    root_path=ROOT_PATH,
 )
 
 
@@ -38,7 +44,7 @@ class HTMLRequest(BaseModel):
 
 
 class URLRequest(BaseModel):
-    url: HttpUrl = "https://automationtester.in/"
+    url: HttpUrl = "https://automationtester.in"
 
 
 class ImageResponse(BaseModel):
@@ -103,9 +109,26 @@ def get_absolute_url(path: str) -> str:
     # Ensure path starts with '/' and BASE_URL doesn't end with '/'
     if not path.startswith("/"):
         path = "/" + path
-    base = BASE_URL.rstrip("/")
-    return f"{base}{path}"
+    base_url = BASE_URL.rstrip("/")
+    root_path = ROOT_PATH.rstrip("/")
+    return f"{base_url}{root_path}{path}"
 
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        #openapi_url=f"/html_to_image/openapi.json",  # Corrected path
+        openapi_url=f"{ROOT_PATH}/openapi.json",  # Corrected path
+        title="HTML to Image API Docs"
+    )
+
+@app.get("/openapi.json", include_in_schema=False)
+async def get_open_api_endpoint():
+    return get_openapi(
+        title="HTML to Image",
+        version="1.0.0",
+        description="API documentation",
+        routes=app.routes,
+    )
 
 # API Endpoints
 @app.post("/convert/html", response_model=ImageResponse)

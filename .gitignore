@@ -169,3 +169,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Static Image generated
+app/static/*.png
+
+tools.conf
