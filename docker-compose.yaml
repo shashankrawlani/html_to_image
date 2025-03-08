@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  html-to-image:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - API_TOKEN=BusItnaSaKhwaabHai
+      - HOST_IMAGES=1
+      - MAX_DOWNLOADS=5
+      - IMAGE_EXPIRY_DAYS=30
+      - BASE_URL=http://127.0.0.1:8000 # Add your domain here
+    volumes:
+      - ./app/static:/app/static
+    restart: unless-stopped
